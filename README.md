@@ -4,13 +4,20 @@ This repository contains templates for C and C++ projects for the Nucleo-F411RE
 board. The template projects can be built using GNU Make or CMake and with a
 GNU Toolchain for ARM.
 
-Note that GNU Makefiles here do not support out-of-source builds, so after a
-build the source tree will be cluttered with .o files or other build artifacts.
+The following sample projects are available:
+- gpio_toggle
+
+## Difference between GNU Make and CMake
+
+The makefiles here do not support out-of-source builds, so after a build the
+source tree will be cluttered with .o files or other build artifacts.
 However for CMake build systems, it is recommanded to use a dedicated build
 directory, leaving the source tree clean.
 
-The following sample projects are available:
-- gpio_toggle
+Also, the makefiles only supports a release build configuration optimized for
+binary size. CMake provides more flexibility with the following build types:
+Debug, Release, RelWithDebInfo and MinSizeRel
+(see https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html).
 
 ## Building on Linux (Ubuntu)
 
@@ -50,6 +57,32 @@ make -j8
 make flash
 ```
 
-## Building on Windows with WSL
+## Building on Windows with WSL2
+
+The steps are the same as on Linux except for the OpenOCD installation.
+Since WSL2 does not provide easy access to USB devices (as of Feb 2025), OpenOCD
+must be installed on Windows and not in the Linux distro inside WSL.
+
+Download the lastest OpenOCD Windows binary package on
+[GitHub](https://github.com/openocd-org/openocd/releases/latest) and install it
+where you want (eg. C:\Users\<username>\AppData\Local\Programs\OpenOCD).
+
+Then build the project like on Linux.
+
+And flash the target using the following commands:
+
+- GNU Make:
+```bash
+make OPENOCD=<path/to/openocd/in/Windows>/bin/openocd.exe flash
+# eg. make OPENOCD=/mnt/c/Users/<username>/AppData/Local/Programs/OpenOCD/bin/openocd.exe flash
+```
+
+- CMake:
+```bash
+export PATH="$PATH:<path/to/openocd/in/Windows>/bin"
+# eg. export PATH="$PATH:/mnt/c/Users/<username>/AppData/Local/Programs/OpenOCD/bin"
+# Can be done from .bashrc or similar
+cmake --build build --target gpio-toggle-flash
+```
 
 ## Building on Windows

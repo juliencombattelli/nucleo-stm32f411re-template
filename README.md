@@ -83,8 +83,14 @@ And flash the target using the following commands:
 
 - GNU Make:
 ```bash
+# if defining tools location for each make invocation
 make OPENOCD=<path/to/openocd/in/Windows>/bin/openocd.exe flash
-# eg. make OPENOCD=/mnt/c/Users/<username>/AppData/Local/Programs/OpenOCD/bin/openocd.exe flash
+make OPENOCD=<path/to/openocd/in/Windows>/bin/openocd.exe debug
+
+# or if using environment variables
+export OPENOCD=<path/to/openocd/in/Windows>/bin/openocd.exe
+make flash
+make debug
 ```
 
 - CMake:

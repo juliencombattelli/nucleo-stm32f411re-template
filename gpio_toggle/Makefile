@@ -1,3 +1,8 @@
+# Disable built-in rules and variables
+MAKEFLAGS += --no-builtin-rules
+MAKEFLAGS += --no-builtin-variables
+$(foreach x,$(filter-out .% MAKE% SHELL CURDIR,$(.VARIABLES)) MAKEINFO,$(if $(filter default,$(origin $x)),$(eval override undefine $x)))
+
 # External modules rules
 
 CMSIS_CORE_INCDIRS := \
@@ -113,9 +118,9 @@ NUCLEO_BSP_SRCS := \
 
 # Application specific rules
 
-TARGET = gpio_toggle
+TARGET := gpio_toggle
 
-ASMSRCS = startup/startup_stm32f411retx.s
+ASMSRCS := startup/startup_stm32f411retx.s
 
 CSRCS := \
 	src/stm32f4xx_it.c \
@@ -128,48 +133,49 @@ CSRCS := \
 
 CXXSRCS :=
 
-INCDIRS = \
+INCDIRS := \
 	src \
 	$(CMSIS_CORE_INCDIRS) \
 	$(CMSIS_DEVICE_F4_INCDIRS) \
 	$(HAL_INCDIRS) \
 	$(NUCLEO_BSP_INCDIRS)
 
-LDSCRIPT=linker/STM32F411RETX_FLASH.ld
+LDSCRIPT    := linker/STM32F411RETX_FLASH.ld
 
-CROSS=arm-none-eabi-
-CC=$(CROSS)gcc
-CXX=$(CROSS)g++
-AS=$(CROSS)gcc
-LD=$(CROSS)g++
-OBJCOPY=$(CROSS)objcopy
-SIZE=$(CROSS)size
+CROSS       := arm-none-eabi-
 
-OPENOCD=openocd
-OPENOCD_CFG=board/st_nucleo_f4.cfg
+CC          ?= $(CROSS)gcc
+CXX         ?= $(CROSS)g++
+AS          ?= $(CROSS)gcc
+LD          ?= $(CROSS)g++
+OBJCOPY     ?= $(CROSS)objcopy
+SIZE        ?= $(CROSS)size
 
-GDB=gdb-multiarch
+OPENOCD     ?= openocd
+OPENOCD_CFG ?= board/st_nucleo_f4.cfg
 
-ARCHFLAGS=-mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16
+GDB         ?= gdb-multiarch
 
-CFLAGS+=-Os -g0
-CFLAGS+=$(ARCHFLAGS)
-CFLAGS+=-fmessage-length=0 -ffunction-sections -fdata-sections
-CFLAGS+=-MMD -MP
-CFLAGS+=-DSTM32F411xE -DUSE_HAL_DRIVER
-CFLAGS+=$(foreach i, $(INCDIRS), -I$(i))
+ARCHFLAGS   := -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16
 
-CXXFLAGS=$(CFLAGS)
-CXXFLAGS+=-fno-rtti -fno-exceptions
-CXXFLAGS+=-std=c++20
+CFLAGS      += -Os -g3
+CFLAGS      += $(ARCHFLAGS)
+CFLAGS      += -fmessage-length=0 -ffunction-sections -fdata-sections
+CFLAGS      += -MMD -MP
+CFLAGS      += -DSTM32F411xE -DUSE_HAL_DRIVER
+CFLAGS      += $(foreach i, $(INCDIRS), -I$(i))
 
-LDFLAGS=$(ARCHFLAGS)
-LDFLAGS+=-Wl,--gc-sections
-LDFLAGS+=-T $(LDSCRIPT) --specs=nano.specs --specs=nosys.specs -lm
+CXXFLAGS    += $(CFLAGS)
+CXXFLAGS    += -fno-rtti -fno-exceptions
+CXXFLAGS    += -std=c++20
 
-OBJS=$(ASMSRCS:.s=.o) $(CSRCS:.c=.o) $(CXXSRCS:.cpp=.o)
+LDFLAGS     += $(ARCHFLAGS)
+LDFLAGS     += -Wl,--gc-sections
+LDFLAGS     += -T $(LDSCRIPT) --specs=nano.specs --specs=nosys.specs -lm
 
-DEPS = $(CSRCS:.c=.d) $(CXXSRCS:.cpp=.d)
+OBJS := $(ASMSRCS:.s=.o) $(CSRCS:.c=.o) $(CXXSRCS:.cpp=.o)
+
+DEPS := $(CSRCS:.c=.d) $(CXXSRCS:.cpp=.d)
 
 all: $(TARGET).elf bin size
 
@@ -186,7 +192,7 @@ $(TARGET).elf: $(OBJS)
 %.o: %.cpp
 	@echo " CX       $<"
 	@mkdir -p $(@D)
-	@$(CXX)  $(CXXFLAGS) -o $@ -c $<
+	@$(CXX) $(CXXFLAGS) -o $@ -c $<
 
 %.o: %.s
 	@echo " AS       $<"
@@ -218,10 +224,10 @@ size: $(TARGET).elf
 	@$(SIZE) --format=berkeley $(TARGET).elf
 
 flash:
-	@if [ ! -f $(OPENOCD) ]; then echo "OpenOCD not found at \`$(OPENOCD)\`, exiting."; exit 1; fi
+	@if ! command -v $(OPENOCD) 2>&1 >/dev/null; then echo "OpenOCD not found at \`$(OPENOCD)\`, exiting."; exit 1; fi
 	$(OPENOCD) -f $(OPENOCD_CFG) -c "program $(TARGET).bin verify reset exit 0x08000000"
 
 debug:
-	@if [ ! -f $(OPENOCD) ]; then echo "OpenOCD not found at \`$(OPENOCD)\`, exiting."; exit 1; fi
-	@if [ ! -f $(GDB) ]; then echo "GDB not found at \`$(GDB)\`, exiting."; exit 1; fi
+	@if ! command -v $(OPENOCD) 2>&1 >/dev/null; then echo "OpenOCD not found at \`$(OPENOCD)\`, exiting."; exit 1; fi
+	@if ! command -v $(GDB) 2>&1 >/dev/null; then echo "GDB not found at \`$(GDB)\`, exiting."; exit 1; fi
 	$(GDB) -ex "target extended-remote | $(OPENOCD) -f $(OPENOCD_CFG) -c \"gdb_port pipe; log_output openocd.log\"" $(TARGET).elf

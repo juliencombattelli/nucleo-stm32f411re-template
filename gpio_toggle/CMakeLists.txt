@@ -42,10 +42,21 @@ find_package(OpenOCD)
 
 if (OpenOCD_FOUND)
     add_custom_target(gpio-toggle-flash
-        ${OpenOCD_EXECUTABLE} -f board/st_nucleo_f4.cfg -c "program gpio-toggle.bin verify reset exit 0x08000000"
+        DEPENDS gpio-toggle
+        COMMAND ${OpenOCD_EXECUTABLE} -f board/st_nucleo_f4.cfg -c "program gpio-toggle.bin verify reset exit 0x08000000"
     )
 
-    # TODO add debug target to start a debugging session with GDB
+    find_package(GDB)
+
+    if (GDB_FOUND)
+        add_custom_target(gpio-toggle-debug
+            DEPENDS gpio-toggle
+            COMMAND ${GDB_EXECUTABLE} -ex "target extended-remote | ${OpenOCD_EXECUTABLE} -f board/st_nucleo_f4.cfg -c \"gdb_port pipe; log_output openocd.log\"" $<TARGET_FILE:gpio-toggle>
+            VERBATIM USES_TERMINAL
+        )
+    else()
+        message(WARNING "GDB not found, not generating debug target.")
+    endif()
 else()
     message(WARNING "OpenOCD not found, not generating flash and debug targets.")
 endif()

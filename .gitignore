@@ -6,3 +6,5 @@
 *.hex
 *.map
 *.lss
+.gdb_history
+openocd.log

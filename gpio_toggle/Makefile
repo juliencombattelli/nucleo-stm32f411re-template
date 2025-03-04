@@ -148,6 +148,8 @@ SIZE=$(CROSS)size
 OPENOCD=openocd
 OPENOCD_CFG=board/st_nucleo_f4.cfg
 
+GDB=gdb-multiarch
+
 ARCHFLAGS=-mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16
 
 CFLAGS+=-Os -g0
@@ -216,4 +218,10 @@ size: $(TARGET).elf
 	@$(SIZE) --format=berkeley $(TARGET).elf
 
 flash:
+	@if [ ! -f $(OPENOCD) ]; then echo "OpenOCD not found at \`$(OPENOCD)\`, exiting."; exit 1; fi
 	$(OPENOCD) -f $(OPENOCD_CFG) -c "program $(TARGET).bin verify reset exit 0x08000000"
+
+debug:
+	@if [ ! -f $(OPENOCD) ]; then echo "OpenOCD not found at \`$(OPENOCD)\`, exiting."; exit 1; fi
+	@if [ ! -f $(GDB) ]; then echo "GDB not found at \`$(GDB)\`, exiting."; exit 1; fi
+	$(GDB) -ex "target extended-remote | $(OPENOCD) -f $(OPENOCD_CFG) -c \"gdb_port pipe; log_output openocd.log\"" $(TARGET).elf

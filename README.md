@@ -25,7 +25,7 @@ Debug, Release, RelWithDebInfo and MinSizeRel
 
 - Install the needed software:
 ```bash
-sudo apt install build-essential gcc-arm-none-eabi cmake openocd
+sudo apt install build-essential gcc-arm-none-eabi cmake openocd gdb-multiarch
 ```
 
 - Build the project:
@@ -39,11 +39,16 @@ cmake --build build -j8
 cmake --build build --target gpio-toggle-flash
 ```
 
+- Start a debugging session with GDB
+```bash
+cmake --build build --target gpio-toggle-debug
+```
+
 ### GNU Make build
 
 - Install the needed software:
 ```bash
-sudo apt install build-essential gcc-arm-none-eabi openocd
+sudo apt install build-essential gcc-arm-none-eabi openocd gdb-multiarch
 ```
 
 - Build the project:
@@ -55,6 +60,11 @@ make -j8
 - Flash the target:
 ```bash
 make flash
+```
+
+- Start a debugging session with GDB
+```bash
+make debug
 ```
 
 ## Building on Windows with WSL2
@@ -83,6 +93,7 @@ export PATH="$PATH:<path/to/openocd/in/Windows>/bin"
 # eg. export PATH="$PATH:/mnt/c/Users/<username>/AppData/Local/Programs/OpenOCD/bin"
 # Can be done from .bashrc or similar
 cmake --build build --target gpio-toggle-flash
+cmake --build build --target gpio-toggle-debug
 ```
 
 ## Building on Windows

@@ -1,0 +1,41 @@
+{
+    "configurations": [
+        {
+            "name": "Debug gpio-toggle",
+            "type": "cppdbg",
+            "request": "launch",
+            "MIMode": "gdb",
+            "miDebuggerPath": "gdb-multiarch",
+            "externalConsole": false,
+            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}/build/gpio_toggle/gpio-toggle.elf",
+            "setupCommands": [
+                {
+                    "text": "file ${workspaceFolder}/build/gpio_toggle/gpio-toggle.elf",
+                    "description": "Load the binary",
+                    "ignoreFailures": false,
+                },
+                {
+                    "text": "target extended-remote | openocd -f board/st_nucleo_f4.cfg -c \"gdb_port pipe; log_output openocd.log\"",
+                    "description": "Connect to the debugger",
+                    "ignoreFailures": false,
+                },
+                {
+                    "text": "monitor reset halt",
+                    "description": "Perform a reset and halt the target",
+                    "ignoreFailures": false,
+                },
+                {
+                    "text": "load",
+                    "description": "Flash the target",
+                    "ignoreFailures": false,
+                },
+                {
+                    "text": "monitor reset init",
+                    "description": "Perform a reset and init the target",
+                    "ignoreFailures": false,
+                },
+            ]
+        }
+    ]
+}

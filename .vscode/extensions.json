@@ -1,0 +1,9 @@
+{
+    "recommendations": [
+        "dan-c-underwood.arm",
+        "ms-vscode.cpptools",
+        "llvm-vs-code-extensions.vscode-clangd",
+        "josetr.cmake-language-support-vscode",
+        "zixuanwang.linkerscript"
+    ]
+}

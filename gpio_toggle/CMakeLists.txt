@@ -21,7 +21,7 @@ target_compile_definitions(gpio-toggle PRIVATE
 )
 get_filename_component(LINKER_SCRIPT linker/STM32F411RETX_FLASH.ld ABSOLUTE)
 target_link_options(gpio-toggle PRIVATE
-    -T ${LINKER_SCRIPT}
+    -T ${LINKER_SCRIPT} -Xlinker -Map=gpio-toggle.map
 )
 
 add_custom_command(

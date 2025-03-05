@@ -230,4 +230,4 @@ flash:
 debug:
 	@if ! command -v $(OPENOCD) 2>&1 >/dev/null; then echo "OpenOCD not found at \`$(OPENOCD)\`, exiting."; exit 1; fi
 	@if ! command -v $(GDB) 2>&1 >/dev/null; then echo "GDB not found at \`$(GDB)\`, exiting."; exit 1; fi
-	$(GDB) -ex "target extended-remote | $(OPENOCD) -f $(OPENOCD_CFG) -c \"gdb_port pipe; log_output openocd.log\"" $(TARGET).elf
+	$(GDB) -ex "target extended-remote | $(OPENOCD) -f $(OPENOCD_CFG) -c \"gdb_port pipe; log_output openocd.log\"" -ex "b main" $(TARGET).elf

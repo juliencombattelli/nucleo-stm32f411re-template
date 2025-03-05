@@ -10,14 +10,14 @@ set(CMAKE_OBJDUMP arm-none-eabi-objdump)
 
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
-set(ARCH_FLAGS "-mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard --specs=nano.specs --specs=nosys.specs")
+set(ARCH_FLAGS "-mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard")
 
-set(COMMON_FLAGS "-fno-builtin -fdata-sections -ffunction-sections")
+set(COMMON_C_CXX_FLAGS "-fno-builtin -fdata-sections -ffunction-sections -nostdlib")
 
-set(CMAKE_C_FLAGS "${ARCH_FLAGS} ${COMMON_FLAGS} -Wall -std=c17" CACHE INTERNAL "C compiler flags")
-set(CMAKE_CXX_FLAGS "${ARCH_FLAGS} ${COMMON_FLAGS} -fno-rtti -fno-exceptions -Wall -std=c++20" CACHE INTERNAL "CXX compiler flags")
+set(CMAKE_C_FLAGS "${ARCH_FLAGS} ${COMMON_C_CXX_FLAGS} -std=c17" CACHE INTERNAL "C compiler flags")
+set(CMAKE_CXX_FLAGS "${ARCH_FLAGS} ${COMMON_C_CXX_FLAGS} -fno-rtti -fno-exceptions -std=c++20" CACHE INTERNAL "CXX compiler flags")
 set(CMAKE_ASM_FLAGS "${ARCH_FLAGS}" CACHE INTERNAL "ASM compiler flags")
-set(CMAKE_EXE_LINKER_FLAGS "-Wl,--gc-sections")
+set(CMAKE_EXE_LINKER_FLAGS "${ARCH_FLAGS} -Wl,--gc-sections" CACHE INTERNAL "Linker flags")
 
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 

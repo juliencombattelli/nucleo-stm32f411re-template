@@ -2,8 +2,7 @@ add_executable(gpio-toggle
     src/main.c
     src/stm32f4xx_it.c
     src/system_stm32f4xx.c
-    src/gnu/syscalls.c
-    src/gnu/sysmem.c
+    src/init.c # TODO add it to startup assembly file
     startup/startup_stm32f411retx.s
 )
 target_include_directories(gpio-toggle PRIVATE

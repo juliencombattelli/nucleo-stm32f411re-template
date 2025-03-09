@@ -4,37 +4,28 @@
             "name": "Debug gpio-toggle",
             "type": "cppdbg",
             "request": "launch",
-            "MIMode": "gdb",
-            "miDebuggerPath": "gdb-multiarch",
-            "externalConsole": false,
+            "program": "${workspaceFolder}${/}build${/}gpio_toggle${/}gpio-toggle.elf",
+            "args": [],
+            "stopAtEntry": true,
             "cwd": "${workspaceFolder}",
-            "program": "${workspaceFolder}/build/gpio_toggle/gpio-toggle.elf",
+            "environment": [],
+            "externalConsole": false,
+            "debugServerPath": "openocd",
+            "debugServerArgs": "-f board/st_nucleo_f4.cfg",
+            "MIMode": "gdb",
+            "miDebuggerPath": "arm-none-eabi-gdb",
+            "miDebuggerArgs": "-nx",
+            "serverLaunchTimeout": 10000,
+            "filterStderr": true,
+            "filterStdout": false,
+            "serverStarted": "Info : Listening on port 3333 for gdb connections",
             "setupCommands": [
-                {
-                    "text": "file ${workspaceFolder}/build/gpio_toggle/gpio-toggle.elf",
-                    "description": "Load the binary",
-                    "ignoreFailures": false,
-                },
-                {
-                    "text": "target extended-remote | openocd -f board/st_nucleo_f4.cfg -c \"gdb_port pipe; log_output openocd.log\"",
-                    "description": "Connect to the debugger",
-                    "ignoreFailures": false,
-                },
-                {
-                    "text": "monitor reset halt",
-                    "description": "Perform a reset and halt the target",
-                    "ignoreFailures": false,
-                },
-                {
-                    "text": "load",
-                    "description": "Flash the target",
-                    "ignoreFailures": false,
-                },
-                {
-                    "text": "monitor reset init",
-                    "description": "Perform a reset and init the target",
-                    "ignoreFailures": false,
-                },
+                { "text": "cd ${workspaceFolder}" },
+                { "text": "file build/gpio_toggle/gpio-toggle.elf", "description": "Load the binary", "ignoreFailures": false},
+                { "text": "target extended-remote localhost:3333", "description": "Connect to the target", "ignoreFailures": false },
+                { "text": "monitor reset halt", "description": "Perform a reset and halt the target", "ignoreFailures": false },
+                { "text": "load", "description": "Flash the target", "ignoreFailures": false },
+                { "text": "monitor reset init", "description": "Perform a reset and init the target", "ignoreFailures": false }
             ]
         }
     ]
